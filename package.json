@@ -37,6 +37,7 @@
     "through2": "^0.4.1"
   },
   "devDependencies": {
+    "lodash.assign": "^2.4.1",
     "mocha": "*",
     "should": "*"
   }
