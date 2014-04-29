@@ -11,6 +11,10 @@ var PluginError = gutil.PluginError;
 module.exports = function(options) {
   options = options || {};
 
+  function normalizeTemplateName(name) {
+    return name.replace('\\', '/');
+  }
+
   function transform(file, encoding, next) {
 
     if(file.isNull()) {
@@ -22,7 +26,7 @@ module.exports = function(options) {
     var module = typeof options.module === 'function' ? options.module.call(file, name) : (options.module || 'ngTemplates');
     var standalone = options.standalone ? ', []' : '';
     var header = gutil.template('angular.module(\'<%= module %>\'<%= standalone %>).run([\'$templateCache\', function($templateCache) {', {module: module, standalone: standalone, file: ''});
-    var content = gutil.template('  $templateCache.put(\'<%= name %>\', \'<%= contents %>\');', {name: name, contents: contents, file: ''});
+    var content = gutil.template('  $templateCache.put(\'<%= name %>\', \'<%= contents %>\');', {name: normalizeTemplateName(name), contents: contents, file: ''});
     var footer = '}]);';
 
     file.contents = new Buffer(['\'use strict\';', header, content, footer].join('\n\n'));
