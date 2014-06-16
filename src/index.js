@@ -18,7 +18,7 @@ module.exports = function(options) {
     }
 
     var name = path.relative(file.base, file.path);
-    var contents = file.contents.toString('utf8').replace(/\'/g, '\\\'');
+    var contents = file.contents.toString('utf8').replace(/\'/g, '\\\'').replace(/\r?\n/g, '\\n\' +\n  \'');
     var module = typeof options.module === 'function' ? options.module.call(file, name) : (options.module || 'ngTemplates');
     var standalone = options.standalone ? ', []' : '';
     var header = gutil.template('angular.module(\'<%= module %>\'<%= standalone %>).run([\'$templateCache\', function($templateCache) {', {module: module, standalone: standalone, file: ''});
@@ -26,8 +26,8 @@ module.exports = function(options) {
     var footer = '}]);';
 
     file.contents = new Buffer(['\'use strict\';', header, content, footer].join('\n\n'));
-    file.path = path.join(path.dirname(file.path), path.basename(file.path, path.extname(file.path)) + '.js');
-    // gutil.log(util.format('File \'%s\' created.', chalk.cyan(path.relative(process.cwd(), file.path))));
+    file.path = gutil.replaceExtension(file.path, '.js');
+    if(options.debug) gutil.log(util.format('File \'%s\' created.', chalk.cyan(path.relative(process.cwd(), file.path))));
     next(null, file);
 
   }
