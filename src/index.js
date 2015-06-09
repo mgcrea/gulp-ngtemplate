@@ -12,7 +12,7 @@ module.exports = function(options) {
   options = options || {};
 
   function normalizeTemplateName(name) {
-    return name.replace('\\', '/');
+    return name.replace(/\\/g, '/');
   }
 
   function transform(file, encoding, next) {
